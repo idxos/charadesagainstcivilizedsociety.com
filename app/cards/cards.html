@@ -1,10 +1,14 @@
 <h2>Cards</h2>
 
-<form>
-  <input placeholder="New Card..." ng-model="newCard">
-  <button type="submit" ng-click="addCard(newCard);newCard = null;">send</button>
+
+<ul class="table-view" id="cards" ng-show="cards.length">
+  <li class="table-view-cell" ng-repeat="card in cards | reverse">{{card.text}} <button class="btn hidden">Button</button></li>
+</ul>
+
+
+
+<form class="input-group">
+  <input type="text" placeholder="New content ..." ng-model="newCard">
+  <button type="submit" class="btn btn-positive" ng-click="addCard(newCard);newCard = null;"> Add </button>
 </form>
 
-<ul id="cards" ng-show="cards.length">
-    <li ng-repeat="card in cards | reverse">{{card.text}}</li>
-</ul>

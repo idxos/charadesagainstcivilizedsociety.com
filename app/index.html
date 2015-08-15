@@ -7,25 +7,37 @@
 
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/normalize.css">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/css/main.css">
-
   <link rel="stylesheet" href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css">
-  <link rel="stylesheet" href="app.css"/>
+  <link rel="stylesheet" href="assets/css/site.css"/>
+  <link rel="stylesheet" href="assets/css/ratchet.min.css"/>
+  <link rel="stylesheet" href="assets/css/ratchet-theme-ios.css"/>
   <script src="bower_components/html5-boilerplate/js/vendor/modernizr-2.6.2.min.js"></script>
 </head>
 <body ng-cloak>
 
-  <ul class="menu">
-    <li><a href="#/home">home</a></li>
-    <li><a href="#/cards">Cards</a></li>
-    <li ng-hide="loggedIn"><a href="#/login">login</a></li>
-    <li ng-show="loggedIn"><a href="#/account">account</a></li>
-  </ul>
+  <header class="bar bar-nav">
+    <h1 class="title">Charades Against Civilized Society</h1>
+  </header>
 
+
+<div class="content">
   <div ng-view></div>
+</div>
 
-  <div>Charades Against Civilized Society v<span app-version></span></div>
+  <nav class="bar bar-tab">
+  <a class="tab-item active" href="#/home">
+    Home
+  <a class="tab-item" href="#/cards">
+    Cards
+  </a>
+  <a class="tab-item" ng-hide="loggedIn" href="#/login">
+    Login
+  </a>
+    <a class="tab-item" ng-show="loggedIn" href="#/account">
+    Account
+  </a>
+</nav>
+
 
 
   <!-- In production use:
@@ -33,6 +45,9 @@
   <script src="//cdn.firebase.com/js/client/2.2.x/firebase.js"></script>
   <script src="//cdn.firebase.com/libs/angularfire/1.0.x/angularfire.min.js"></script>
   -->
+
+  <script src="app/assets/js/ratchet.min.js"></script>
+
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
   <script src="bower_components/firebase/firebase.js"></script>
