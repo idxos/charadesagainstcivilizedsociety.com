@@ -4,154 +4,115 @@
 
   <head>
     <meta charset="utf-8" />
-    <title>AngularJS Plunker</title>
+    <title>Charades Against Civilized Society App</title>
     <script>document.write('<base href="' + document.location + '" />');</script>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="http://getbootstrap.com/2.3.2/assets/css/bootstrap.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.js"></script>
     <script src="http://code.angularjs.org/1.2.4/angular-route.js"></script>
+    <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+
+    <!-- AngularFire -->
+    <script src="https://cdn.firebase.com/libs/angularfire/1.1.2/angularfire.min.js"></script>
+
+
+
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/restangular/1.3.1/restangular.js"></script>    
     <script>
-    angular.module('project', ['restangular', 'ngRoute']).
-  config(function($routeProvider, RestangularProvider) {
-    $routeProvider.
-      when('/', {
-        controller:ListCtrl, 
-        templateUrl:'list.html'
-      }).
-      when('/edit/:projectId', {
-        controller:EditCtrl, 
-        templateUrl:'detail.html',
-        resolve: {
-          project: function(Restangular, $route){
-            return Restangular.one('projects', $route.current.params.projectId).get();
-          }
-        }
-      }).
-      when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
-      otherwise({redirectTo:'/'});
       
-      RestangularProvider.setBaseUrl('https://api.mongolab.com/api/1/databases/angularjs/collections');
-      RestangularProvider.setDefaultRequestParams({ apiKey: '4f847ad3e4b08a2eed5f3b54' })
-      RestangularProvider.setRestangularFields({
-        id: '_id.$oid'
-      });
-      
-      RestangularProvider.setRequestInterceptor(function(elem, operation, what) {
+        var app = angular.module("myApp", ["firebase"]);
         
-        if (operation === 'put') {
-          elem._id = undefined;
-          return elem;
-        }
-        return elem;
-      })
-  });
+        app.controller("SampleController", ["$scope", "$firebaseArray",
+          function($scope, $firebaseArray) {
+            // ...
+          }
+        ]);
 
 
-function ListCtrl($scope, Restangular) {
-   $scope.projects = Restangular.all("projects").getList().$object;
-}
 
 
-function CreateCtrl($scope, $location, Restangular) {
-  $scope.save = function() {
-    Restangular.all('projects').post($scope.project).then(function(project) {
-      $location.path('/list');
+
+
+
+
+
+
+
+
+
+// this factory returns a synchronized array of chat messages
+app.factory("chatMessages", ["$firebaseArray",
+  function($firebaseArray) {
+    // create a reference to the database location where we will store our data
+    var randomRoomId = Math.round(Math.random() * 100000000);
+    var ref = new Firebase("https://charadesagainst.firebaseio.com/af/intro/demo/" + randomRoomId);
+
+    // this uses AngularFire to create the synchronized array
+    return $firebaseArray(ref);
+  }
+]);
+
+app.controller("ChatCtrl", ["$scope", "chatMessages",
+  // we pass our new chatMessages factory into the controller
+  function($scope, chatMessages) {
+    $scope.user = "Guest " + Math.round(Math.random() * 100);
+
+    // we add chatMessages array to the scope to be used in our ng-repeat
+    $scope.messages = chatMessages;
+
+    // a method to create new messages; called by ng-submit
+    $scope.addMessage = function() {
+      // calling $add on a synchronized array is like Array.push(),
+      // except that it saves the changes to our database!
+      $scope.messages.$add({
+        from: $scope.user,
+        content: $scope.message
+      });
+
+      // reset the message input
+      $scope.message = "";
+    };
+
+    // if the messages are empty, add something for fun!
+    $scope.messages.$loaded(function() {
+      if ($scope.messages.length === 0) {
+        $scope.messages.$add({
+          from: "Firebase Docs",
+          content: "Hello world!"
+        });
+      }
     });
   }
-}
+]);
 
-function EditCtrl($scope, $location, Restangular, project) {
-  var original = project;
-  $scope.project = Restangular.copy(original);
-  
 
-  $scope.isClean = function() {
-    return angular.equals(original, $scope.project);
-  }
 
-  $scope.destroy = function() {
-    original.remove().then(function() {
-      $location.path('/list');
-    });
-  };
 
-  $scope.save = function() {
-    $scope.project.put().then(function() {
-      $location.path('/');
-    });
-  };
-}
+
     </script>
   </head>
-
   <body>
-    <div ng-app="project">
-    <h2><a target="_blank" href="https://github.com/mgonto/restangular">Restangular Example. Click here to check out the library</a></h2>
-    <h2>JavaScript Projects. <a href="http://angularjs.org/#wire-up-a-backend" target="_blank">Based on AngularJS's sample</a></h2>
-    <div ng-view></div>
-  
-  
-  
-    <!-- CACHE FILE: list.html -->
-    <script type="text/ng-template" id="list.html">
-      <input type="text" ng-model="search" class="search-query" placeholder="Search">
-      <table>
-        <thead>
-        <tr>
-          <th>Project</th>
-          <th>Description</th>
-          <th><a href="#/new"><i class="icon-plus-sign"></i></a></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="project in projects | filter:search | orderBy:'name'" ng-show="project._id.$oid">
-          <td><a href="{{project.site}}" target="_blank">{{project.name}}</a></td>
-          <td>{{project.description}}</td>
-          <td>
-            <a href="#/edit/{{project._id.$oid}}"><i class="icon-pencil"></i></a>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </script>
-  
-  
-  
-    <!-- CACHE FILE: detail.html -->
-    <script type="text/ng-template" id="detail.html">
-      <form name="myForm">
-        <div class="control-group" ng-class="{error: myForm.name.$invalid}">
-          <label>Name</label>
-          <input type="text" name="name" ng-model="project.name" required>
-          <span ng-show="myForm.name.$error.required" class="help-inline">
-              Required</span>
-        </div>
-      
-        <div class="control-group" ng-class="{error: myForm.site.$invalid}">
-          <label>Website</label>
-          <input type="url" name="site" ng-model="project.site" required>
-          <span ng-show="myForm.site.$error.required" class="help-inline">
-              Required</span>
-          <span ng-show="myForm.site.$error.url" class="help-inline">
-              Not a URL</span>
-        </div>
-      
-        <label>Description</label>
-        <textarea name="description" ng-model="project.description"></textarea>
-      
-        <br>
-        <a href="#/" class="btn">Cancel</a>
-        <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid"
-                class="btn btn-primary">Save</button>
-        <button ng-click="destroy()"
-                ng-show="project._id" class="btn btn-danger">Delete</button>
+
+        
+    <div ng-app="myApp" ng-controller="ChatCtrl">
+      <ul class="chatbox">
+        <li ng-repeat="message in messages">{{ message.from }}: {{ message.content }}</li>
+      </ul>
+      <form ng-submit="addMessage()">
+        <input type="text" ng-model="message">
+        <input type="submit" value="Add Message">
       </form>
-    </script>
-  </div>
+    </div>
 
   </body>
-
 </html>
 
