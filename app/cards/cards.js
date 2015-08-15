@@ -18,7 +18,8 @@
   }]);
 
   app.config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/cards', {
+    $routeProvider
+    .when('/cards', {
       templateUrl: 'cards/cards.html',
       controller: 'CardCtrl'
     });

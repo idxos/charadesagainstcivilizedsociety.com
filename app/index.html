@@ -17,10 +17,16 @@
 
   <header class="bar bar-nav">
     <h1 class="title">Charades Against Civilized Society</h1>
+    <button class="btn pull-right" ng-hide="loggedIn" href="#/login">
+      Login
+    </button>
+    <button class="btn pull-right" ng-show="loggedIn" href="#/account">
+      Account
+    </button>
   </header>
 
 
-<div class="content">
+<div class="content-padded">
   <div ng-view></div>
 </div>
 
@@ -30,12 +36,7 @@
   <a class="tab-item" href="#/cards">
     Cards
   </a>
-  <a class="tab-item" ng-hide="loggedIn" href="#/login">
-    Login
-  </a>
-    <a class="tab-item" ng-show="loggedIn" href="#/account">
-    Account
-  </a>
+
 </nav>
 
 
